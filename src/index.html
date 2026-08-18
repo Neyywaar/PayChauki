@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PayChauki – Fraud Detection Demo</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg" sizes="any">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div id="login-view" class="view">
+    <div class="login-wrap">
+      <div class="login-brand">
+        <img src="assets/square_logo.svg" alt="PayChauki logo" class="logo">
+        <p class="tagline">Rule-based transaction monitoring and fraud detection prototype</p>
+      </div>
+      <div class="login-cards">
+        <article class="login-card customer">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#4E3170" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>
+            </svg>
+          </div>
+          <h2>Customer</h2>
+          <p>Create an account or sign in to record transactions and monitor your activity.</p>
+
+          <form id="login-form" novalidate>
+            <div class="field">
+              <label for="login-username">Username</label>
+              <input type="text" id="login-username" autocomplete="username" placeholder="e.g. saibya">
+            </div>
+            <div class="field">
+              <label for="login-password">Password</label>
+              <input type="password" id="login-password" autocomplete="current-password" placeholder="Your password">
+              <p class="field-error" id="error-login"></p>
+            </div>
+            <button type="submit" class="btn btn-primary">Sign In</button>
+            <p class="auth-switch"><button type="button" class="link-btn" id="show-signup">New customer? Create account</button></p>
+          </form>
+
+          <form id="signup-form" class="hidden" novalidate>
+            <div class="field">
+              <label for="signup-username">Choose a username</label>
+              <input type="text" id="signup-username" autocomplete="username" placeholder="At least 3 characters">
+              <p class="field-error" id="error-signup-username"></p>
+            </div>
+            <div class="field">
+              <label for="signup-password">Create a password</label>
+              <input type="password" id="signup-password" autocomplete="new-password" placeholder="At least 4 characters">
+              <p class="field-error" id="error-signup-password"></p>
+            </div>
+            <div class="field">
+              <label for="signup-confirm">Confirm password</label>
+              <input type="password" id="signup-confirm" autocomplete="new-password" placeholder="Repeat your password">
+              <p class="field-error" id="error-signup-confirm"></p>
+            </div>
+            <button type="submit" class="btn btn-primary">Create Account</button>
+            <p class="auth-switch"><button type="button" class="link-btn" id="show-login">Already have an account? Sign in</button></p>
+          </form>
+        </article>
+
+        <article class="login-card analyst">
+          <div class="card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#98377C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6l7-3z"/>
+              <path d="M9 12l2 2 4-4"/>
+            </svg>
+          </div>
+          <h2>Fraud Analyst</h2>
+          <p>Review transactions, risk levels and status with summary statistics.</p>
+
+          <form id="analyst-login-form" novalidate>
+            <div class="field">
+              <label for="analyst-username">Username</label>
+              <input type="text" id="analyst-username" autocomplete="username" placeholder="sandesh">
+            </div>
+            <div class="field">
+              <label for="analyst-password">Password</label>
+              <input type="password" id="analyst-password" autocomplete="current-password" placeholder="admin">
+              <p class="field-error" id="error-analyst"></p>
+            </div>
+            <button type="submit" class="btn btn-primary">Login as Analyst</button>
+            <p class="form-hint">Demo analyst account: <strong>sandesh · admin</strong></p>
+          </form>
+        </article>
+      </div>
+      <p class="tagline" style="margin-top:2.5rem;margin-bottom:0">Academic Demo Prototype [Simulated Data Only]</p>
+    </div>
+  </div>
+
+  <div id="app-view" class="view hidden">
+    <header class="topbar">
+      <div class="brand">
+        <img src="assets/vertical_logo.svg" alt="PayChauki logo" class="nav-logo">
+      </div>
+      <div class="user-box">
+        <span class="avatar" id="avatar"></span>
+        <span class="user-name" id="user-name"></span>
+        <button class="btn btn-demo" id="demo-btn">Demo</button>
+        <button class="btn btn-ghost" id="logout-btn">Logout</button>
+      </div>
+    </header>
+
+    <main class="main">
+
+      <section id="customer-view" class="view hidden">
+        <h2>Customer Dashboard</h2>
+
+        <div class="stat-grid" id="customer-stats"></div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Fraud Alerts</h3>
+          </div>
+          <div id="customer-alerts"></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Transaction History</h3>
+            <button class="btn btn-primary" id="new-transaction-btn">New Transaction</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>Location</th>
+                  <th class="num">Amount</th>
+                  <th>Risk</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="customer-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="analyst-view" class="view hidden">
+        <h2>Analyst Console</h2>
+
+        <div class="stat-grid" id="analyst-stats"></div>
+
+        <div class="filter-bar" id="analyst-filters">
+          <button class="btn-filter active" data-filter="ALL">All</button>
+          <button class="btn-filter" data-filter="APPROVED">Approved</button>
+          <button class="btn-filter" data-filter="FLAGGED">Flagged</button>
+          <button class="btn-filter" data-filter="BLOCKED">Blocked</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>All Transactions</h3>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th class="num">Amount</th>
+                  <th>Risk</th>
+                  <th>Status</th>
+                  <th>Detected Reasons</th>
+                  <th>Report</th>
+                </tr>
+              </thead>
+              <tbody id="analyst-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Active Fraud Rules</h3>
+          </div>
+          <div class="panel-body">
+            <div class="rules-list" id="rules-list"></div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <p class="footer">PayChauki. Academic Demo Prototype [Simulated Data Only]</p>
+  </div>
+
+  <div id="transaction-modal" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h3>New Transaction</h3>
+        <button class="btn-close" id="modal-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="transaction-form" novalidate>
+        <div class="field">
+          <label for="tx-description">Description</label>
+          <input type="text" id="tx-description" maxlength="60" placeholder="e.g. Electric kettle">
+          <p class="field-error" id="error-description">Please enter a description.</p>
+        </div>
+        <div class="field">
+          <label for="tx-category">Category</label>
+          <select id="tx-category">
+            <option value="Salary">Salary</option>
+            <option value="Bill Payment">Bill Payment</option>
+            <option value="Retail Purchase">Retail Purchase</option>
+            <option value="Food &amp; Dining">Food &amp; Dining</option>
+            <option value="Online Shopping">Online Shopping</option>
+            <option value="International Transfer">International Transfer</option>
+            <option value="Online Gambling">Online Gambling</option>
+            <option value="Cryptocurrency">Cryptocurrency</option>
+            <option value="Cash Advance">Cash Advance</option>
+          </select>
+          <p class="field-error" id="error-category">Please choose a category.</p>
+        </div>
+        <div class="field">
+          <label for="tx-amount">Amount (NPR)</label>
+          <input type="number" id="tx-amount" min="1" step="0.01" placeholder="e.g. 250000">
+          <p class="field-error" id="error-amount">Please enter an amount greater than zero.</p>
+        </div>
+        <div class="field">
+          <label for="tx-location">Location (optional)</label>
+          <input type="text" id="tx-location" maxlength="40" placeholder="e.g. Kathmandu">
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:0.5rem;margin-top:0.5rem">
+          <button type="button" class="btn btn-ghost" id="modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit for Fraud Check</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/fraud.js"></script>
+  <script src="js/transactions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
